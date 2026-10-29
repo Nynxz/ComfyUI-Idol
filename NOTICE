@@ -1,0 +1,10 @@
+ComfyUI-Idol
+ComfyUI support for Idol by Speridlabs (https://github.com/speridlabs/idol-sdk, Apache License 2.0).
+This pack contains no model code: Idol is the TripoSplat architecture (VAST-AI-Research/TripoSplat), which
+ComfyUI implements in comfy/ldm/triposplat, and the released weights load into it unchanged. idol/preprocess.py
+and idol/camera.py port idol-sdk's preprocess.py and camera.py to ComfyUI tensors and camera conventions.
+
+Idol weights: https://huggingface.co/speridlabs/idol (Apache License 2.0). The files on
+https://huggingface.co/nynxz/Idol are those weights in ComfyUI's file layout (scripts/convert.py).
+Idol also uses DINOv3 ViT-H+/16 (Meta, DINOv3 License), the FLUX.2 VAE (Black Forest Labs) and BiRefNet
+(Zheng et al., MIT License), each under its own license.

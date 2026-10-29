@@ -1,0 +1,1138 @@
+{
+ "id": "b3d6c1a0-5e2f-4c7e-9a1b-1d013d000001",
+ "revision": 0,
+ "last_node_id": 21,
+ "last_link_id": 24,
+ "nodes": [
+  {
+   "id": 1,
+   "type": "LoadImage",
+   "pos": [
+    0,
+    0
+   ],
+   "size": [
+    315,
+    400
+   ],
+   "flags": {},
+   "order": 0,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "IMAGE",
+     "type": "IMAGE",
+     "links": [
+      1
+     ]
+    },
+    {
+     "name": "MASK",
+     "type": "MASK",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoadImage"
+   },
+   "widgets_values": [
+    "idol_fox.webp",
+    "image"
+   ]
+  },
+  {
+   "id": 2,
+   "type": "LoadBackgroundRemovalModel",
+   "pos": [
+    0,
+    450
+   ],
+   "size": [
+    315,
+    60
+   ],
+   "flags": {},
+   "order": 1,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "bg_model",
+     "type": "BACKGROUND_REMOVAL",
+     "links": [
+      2
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "LoadBackgroundRemovalModel"
+   },
+   "widgets_values": [
+    "birefnet.safetensors"
+   ]
+  },
+  {
+   "id": 3,
+   "type": "IdolPreprocessImage",
+   "pos": [
+    380,
+    0
+   ],
+   "size": [
+    330,
+    180
+   ],
+   "flags": {},
+   "order": 2,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "image",
+     "type": "IMAGE",
+     "link": 1
+    },
+    {
+     "name": "mask",
+     "type": "MASK",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "bg_removal_model",
+     "type": "BACKGROUND_REMOVAL",
+     "link": 2,
+     "shape": 7
+    }
+   ],
+   "outputs": [
+    {
+     "name": "image",
+     "type": "IMAGE",
+     "links": [
+      3,
+      4
+     ]
+    },
+    {
+     "name": "mask",
+     "type": "MASK",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "IdolPreprocessImage"
+   },
+   "widgets_values": [
+    "synthetic",
+    1,
+    1024
+   ]
+  },
+  {
+   "id": 4,
+   "type": "PreviewImage",
+   "pos": [
+    380,
+    230
+   ],
+   "size": [
+    330,
+    350
+   ],
+   "flags": {},
+   "order": 3,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 3
+    }
+   ],
+   "outputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "PreviewImage"
+   },
+   "widgets_values": [],
+   "title": "What the model sees"
+  },
+  {
+   "id": 5,
+   "type": "CLIPVisionLoader",
+   "pos": [
+    0,
+    560
+   ],
+   "size": [
+    315,
+    60
+   ],
+   "flags": {},
+   "order": 4,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "CLIP_VISION",
+     "type": "CLIP_VISION",
+     "links": [
+      5
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CLIPVisionLoader"
+   },
+   "widgets_values": [
+    "dino_v3_vit_h.safetensors"
+   ]
+  },
+  {
+   "id": 6,
+   "type": "VAELoader",
+   "pos": [
+    0,
+    670
+   ],
+   "size": [
+    315,
+    60
+   ],
+   "flags": {},
+   "order": 5,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "VAE",
+     "type": "VAE",
+     "links": [
+      6
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAELoader"
+   },
+   "widgets_values": [
+    "flux2-vae.safetensors"
+   ],
+   "title": "Load VAE (FLUX.2)"
+  },
+  {
+   "id": 7,
+   "type": "TripoSplatConditioning",
+   "pos": [
+    760,
+    0
+   ],
+   "size": [
+    320,
+    110
+   ],
+   "flags": {},
+   "order": 6,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "clip_vision",
+     "type": "CLIP_VISION",
+     "link": 5
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 6
+    },
+    {
+     "name": "image",
+     "type": "IMAGE",
+     "link": 4
+    }
+   ],
+   "outputs": [
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "links": [
+      10
+     ]
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "links": [
+      11
+     ]
+    },
+    {
+     "name": "latent",
+     "type": "LATENT",
+     "links": [
+      12
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "TripoSplatConditioning"
+   },
+   "widgets_values": []
+  },
+  {
+   "id": 8,
+   "type": "UNETLoader",
+   "pos": [
+    380,
+    640
+   ],
+   "size": [
+    330,
+    90
+   ],
+   "flags": {},
+   "order": 7,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      7
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "UNETLoader"
+   },
+   "widgets_values": [
+    "idol_fp16.safetensors",
+    "default"
+   ]
+  },
+  {
+   "id": 9,
+   "type": "VAELoader",
+   "pos": [
+    380,
+    780
+   ],
+   "size": [
+    330,
+    60
+   ],
+   "flags": {},
+   "order": 8,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [
+    {
+     "name": "VAE",
+     "type": "VAE",
+     "links": [
+      8,
+      14
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAELoader"
+   },
+   "widgets_values": [
+    "idol_decoder_fp16.safetensors"
+   ],
+   "title": "Load VAE (Idol decoder)"
+  },
+  {
+   "id": 10,
+   "type": "TripoSplatSamplingPreview",
+   "pos": [
+    760,
+    500
+   ],
+   "size": [
+    320,
+    230
+   ],
+   "flags": {},
+   "order": 9,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 7
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 8
+    }
+   ],
+   "outputs": [
+    {
+     "name": "MODEL",
+     "type": "MODEL",
+     "links": [
+      9
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "TripoSplatSamplingPreview"
+   },
+   "widgets_values": [
+    5,
+    16384,
+    90.0,
+    15.0,
+    3
+   ]
+  },
+  {
+   "id": 11,
+   "type": "KSampler",
+   "pos": [
+    1130,
+    0
+   ],
+   "size": [
+    315,
+    262
+   ],
+   "flags": {},
+   "order": 10,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model",
+     "type": "MODEL",
+     "link": 9
+    },
+    {
+     "name": "positive",
+     "type": "CONDITIONING",
+     "link": 10
+    },
+    {
+     "name": "negative",
+     "type": "CONDITIONING",
+     "link": 11
+    },
+    {
+     "name": "latent_image",
+     "type": "LATENT",
+     "link": 12
+    }
+   ],
+   "outputs": [
+    {
+     "name": "LATENT",
+     "type": "LATENT",
+     "links": [
+      13,
+      15
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "KSampler"
+   },
+   "widgets_values": [
+    42,
+    "fixed",
+    50,
+    4.0,
+    "euler",
+    "simple",
+    1.0
+   ]
+  },
+  {
+   "id": 12,
+   "type": "VAEDecodeTripoSplat",
+   "pos": [
+    1130,
+    320
+   ],
+   "size": [
+    315,
+    130
+   ],
+   "flags": {},
+   "order": 11,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "samples",
+     "type": "LATENT",
+     "link": 13
+    },
+    {
+     "name": "vae",
+     "type": "VAE",
+     "link": 14
+    }
+   ],
+   "outputs": [
+    {
+     "name": "splat",
+     "type": "SPLAT",
+     "links": [
+      16,
+      19,
+      23
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "VAEDecodeTripoSplat"
+   },
+   "widgets_values": [
+    262144,
+    0,
+    "fixed"
+   ]
+  },
+  {
+   "id": 13,
+   "type": "IdolCamera",
+   "pos": [
+    1130,
+    500
+   ],
+   "size": [
+    315,
+    130
+   ],
+   "flags": {},
+   "order": 12,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "samples",
+     "type": "LATENT",
+     "link": 15
+    }
+   ],
+   "outputs": [
+    {
+     "name": "camera_info",
+     "type": "LOAD3D_CAMERA",
+     "links": [
+      17,
+      20
+     ]
+    },
+    {
+     "name": "yaw",
+     "type": "FLOAT",
+     "links": []
+    },
+    {
+     "name": "pitch",
+     "type": "FLOAT",
+     "links": []
+    },
+    {
+     "name": "distance",
+     "type": "FLOAT",
+     "links": []
+    },
+    {
+     "name": "fov",
+     "type": "FLOAT",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "IdolCamera"
+   },
+   "widgets_values": []
+  },
+  {
+   "id": 14,
+   "type": "RenderSplat",
+   "pos": [
+    1500,
+    0
+   ],
+   "size": [
+    320,
+    350
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "splat",
+     "type": "SPLAT",
+     "link": 16
+    },
+    {
+     "name": "bg_image",
+     "type": "IMAGE",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "camera_info",
+     "type": "LOAD3D_CAMERA",
+     "link": 17,
+     "shape": 7
+    }
+   ],
+   "outputs": [
+    {
+     "name": "image",
+     "type": "IMAGE",
+     "links": [
+      18
+     ]
+    },
+    {
+     "name": "mask",
+     "type": "MASK",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "RenderSplat"
+   },
+   "widgets_values": [
+    1024,
+    1024,
+    1,
+    1.0,
+    2.0,
+    0.0,
+    0.0,
+    "color",
+    "#000000"
+   ],
+   "title": "Render Splat (predicted input view)"
+  },
+  {
+   "id": 15,
+   "type": "PreviewImage",
+   "pos": [
+    1870,
+    0
+   ],
+   "size": [
+    400,
+    430
+   ],
+   "flags": {},
+   "order": 14,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 18
+    }
+   ],
+   "outputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "PreviewImage"
+   },
+   "widgets_values": [],
+   "title": "Predicted input view"
+  },
+  {
+   "id": 16,
+   "type": "RenderSplat",
+   "pos": [
+    1500,
+    420
+   ],
+   "size": [
+    320,
+    350
+   ],
+   "flags": {},
+   "order": 15,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "splat",
+     "type": "SPLAT",
+     "link": 19
+    },
+    {
+     "name": "bg_image",
+     "type": "IMAGE",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "camera_info",
+     "type": "LOAD3D_CAMERA",
+     "link": 20,
+     "shape": 7
+    }
+   ],
+   "outputs": [
+    {
+     "name": "image",
+     "type": "IMAGE",
+     "links": [
+      21
+     ]
+    },
+    {
+     "name": "mask",
+     "type": "MASK",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "RenderSplat"
+   },
+   "widgets_values": [
+    768,
+    768,
+    72,
+    1.0,
+    2.0,
+    0.0,
+    0.0,
+    "color",
+    "#848484"
+   ],
+   "title": "Render Splat (turntable)"
+  },
+  {
+   "id": 17,
+   "type": "CreateVideo",
+   "pos": [
+    1870,
+    480
+   ],
+   "size": [
+    320,
+    130
+   ],
+   "flags": {},
+   "order": 16,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "images",
+     "type": "IMAGE",
+     "link": 21
+    },
+    {
+     "name": "audio",
+     "type": "AUDIO",
+     "link": null,
+     "shape": 7
+    }
+   ],
+   "outputs": [
+    {
+     "name": "VIDEO",
+     "type": "VIDEO",
+     "links": [
+      22
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "CreateVideo"
+   },
+   "widgets_values": [
+    24
+   ]
+  },
+  {
+   "id": 18,
+   "type": "SaveVideo",
+   "pos": [
+    1870,
+    660
+   ],
+   "size": [
+    400,
+    400
+   ],
+   "flags": {},
+   "order": 17,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "video",
+     "type": "VIDEO",
+     "link": 22
+    }
+   ],
+   "outputs": [
+    {
+     "name": "video",
+     "type": "VIDEO",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "SaveVideo"
+   },
+   "widgets_values": [
+    "video/idol",
+    "auto",
+    "auto"
+   ]
+  },
+  {
+   "id": 19,
+   "type": "SplatToFile3D",
+   "pos": [
+    1500,
+    830
+   ],
+   "size": [
+    320,
+    80
+   ],
+   "flags": {},
+   "order": 18,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "splat",
+     "type": "SPLAT",
+     "link": 23
+    }
+   ],
+   "outputs": [
+    {
+     "name": "model_3d",
+     "type": "FILE_3D_SPLAT_ANY",
+     "links": [
+      24
+     ]
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "SplatToFile3D"
+   },
+   "widgets_values": [
+    "ply"
+   ]
+  },
+  {
+   "id": 20,
+   "type": "SaveGaussianSplat",
+   "pos": [
+    2320,
+    0
+   ],
+   "size": [
+    600,
+    700
+   ],
+   "flags": {},
+   "order": 19,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "model_3d",
+     "type": "FILE_3D_SPLAT_ANY,FILE_3D_PLY,FILE_3D_SPLAT,FILE_3D_SPZ,FILE_3D_KSPLAT",
+     "link": 24
+    },
+    {
+     "name": "model_3d_info",
+     "type": "LOAD3D_MODEL_INFO",
+     "link": null,
+     "shape": 7
+    },
+    {
+     "name": "camera_info",
+     "type": "LOAD3D_CAMERA",
+     "link": null,
+     "shape": 7
+    }
+   ],
+   "outputs": [
+    {
+     "name": "model_3d",
+     "type": "FILE_3D_SPLAT_ANY",
+     "links": []
+    },
+    {
+     "name": "model_3d_info",
+     "type": "LOAD3D_MODEL_INFO",
+     "links": []
+    },
+    {
+     "name": "camera_info",
+     "type": "LOAD3D_CAMERA",
+     "links": []
+    },
+    {
+     "name": "width",
+     "type": "INT",
+     "links": []
+    },
+    {
+     "name": "height",
+     "type": "INT",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "SaveGaussianSplat"
+   },
+   "widgets_values": [
+    "3d/idol",
+    "",
+    1024,
+    1024
+   ]
+  },
+  {
+   "id": 21,
+   "type": "MarkdownNote",
+   "pos": [
+    0,
+    790
+   ],
+   "size": [
+    710,
+    560
+   ],
+   "flags": {},
+   "order": 20,
+   "mode": 0,
+   "inputs": [],
+   "outputs": [],
+   "properties": {
+    "Node name for S&R": "MarkdownNote"
+   },
+   "widgets_values": [
+    "## Idol: image to 3D gaussian splat\n\n[Idol](https://huggingface.co/speridlabs/idol) by Speridlabs is the TripoSplat architecture retrained, so ComfyUI runs it natively on the stock TripoSplat nodes. This pack adds the converted weights, **Idol Preprocess Image** (Idol's crop modes, background removal in place) and **Idol Camera** (the input camera the model predicts).\n\n**Models** (put each in the folder shown)\n\n| File | Folder | Source |\n|---|---|---|\n| `idol_fp16.safetensors` | `models/diffusion_models` | [nynxz/Idol](https://huggingface.co/nynxz/Idol) |\n| `idol_decoder_fp16.safetensors` | `models/vae` | [nynxz/Idol](https://huggingface.co/nynxz/Idol) |\n| `dino_v3_vit_h.safetensors` | `models/clip_vision` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat/tree/main/clip_vision) |\n| `flux2-vae.safetensors` | `models/vae` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat/tree/main/vae) |\n| `birefnet.safetensors` | `models/background_removal` | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet/tree/main/background_removal) |\n\n**Settings**\n\n- Idol Preprocess Image `mode`: **synthetic** for renders / generated images (the object fills 1/1.2 of the frame), **real** for photographs (1/1.7).\n- KSampler: `euler` / `simple`, **50** steps, cfg **4.0** = Idol's defaults (cfg_strength 3 + time shift 3, which the model config carries). `dpmpp_2m` at 20 steps is a faster trade-off.\n- TripoSplat Decode `num_gaussians`: 262144 matches the octree's density; more oversamples the same points.\n- The top Render Splat shows the splat from the camera Idol predicted for the input, so it should look like the preprocessed image. The bottom one is a turntable.\n"
+   ],
+   "title": "Idol"
+  }
+ ],
+ "links": [
+  [
+   1,
+   1,
+   0,
+   3,
+   0,
+   "IMAGE"
+  ],
+  [
+   2,
+   2,
+   0,
+   3,
+   2,
+   "BACKGROUND_REMOVAL"
+  ],
+  [
+   3,
+   3,
+   0,
+   4,
+   0,
+   "IMAGE"
+  ],
+  [
+   4,
+   3,
+   0,
+   7,
+   2,
+   "IMAGE"
+  ],
+  [
+   5,
+   5,
+   0,
+   7,
+   0,
+   "CLIP_VISION"
+  ],
+  [
+   6,
+   6,
+   0,
+   7,
+   1,
+   "VAE"
+  ],
+  [
+   7,
+   8,
+   0,
+   10,
+   0,
+   "MODEL"
+  ],
+  [
+   8,
+   9,
+   0,
+   10,
+   1,
+   "VAE"
+  ],
+  [
+   9,
+   10,
+   0,
+   11,
+   0,
+   "MODEL"
+  ],
+  [
+   10,
+   7,
+   0,
+   11,
+   1,
+   "CONDITIONING"
+  ],
+  [
+   11,
+   7,
+   1,
+   11,
+   2,
+   "CONDITIONING"
+  ],
+  [
+   12,
+   7,
+   2,
+   11,
+   3,
+   "LATENT"
+  ],
+  [
+   13,
+   11,
+   0,
+   12,
+   0,
+   "LATENT"
+  ],
+  [
+   14,
+   9,
+   0,
+   12,
+   1,
+   "VAE"
+  ],
+  [
+   15,
+   11,
+   0,
+   13,
+   0,
+   "LATENT"
+  ],
+  [
+   16,
+   12,
+   0,
+   14,
+   0,
+   "SPLAT"
+  ],
+  [
+   17,
+   13,
+   0,
+   14,
+   2,
+   "LOAD3D_CAMERA"
+  ],
+  [
+   18,
+   14,
+   0,
+   15,
+   0,
+   "IMAGE"
+  ],
+  [
+   19,
+   12,
+   0,
+   16,
+   0,
+   "SPLAT"
+  ],
+  [
+   20,
+   13,
+   0,
+   16,
+   2,
+   "LOAD3D_CAMERA"
+  ],
+  [
+   21,
+   16,
+   0,
+   17,
+   0,
+   "IMAGE"
+  ],
+  [
+   22,
+   17,
+   0,
+   18,
+   0,
+   "VIDEO"
+  ],
+  [
+   23,
+   12,
+   0,
+   19,
+   0,
+   "SPLAT"
+  ],
+  [
+   24,
+   19,
+   0,
+   20,
+   0,
+   "FILE_3D_SPLAT_ANY"
+  ]
+ ],
+ "groups": [],
+ "config": {},
+ "extra": {
+  "ds": {
+   "scale": 0.6,
+   "offset": [
+    40,
+    40
+   ]
+  }
+ },
+ "version": 0.4
+}
