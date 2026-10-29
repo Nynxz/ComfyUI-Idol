@@ -140,20 +140,31 @@ def main():
         ref_logits = ref_oct(coords.to(device), level.to(device), latent.to(device)).cpu()
         ref_feats = ref_gs(points.to(device), latent.to(device))
         ref_g = ref_gs.to_representation(points.to(device), ref_feats)[0]
+    if args.cuda:
+        # the reference as shipped runs the decoder blocks in fp16 too (convert_module_to_f16): how far is its own
+        # mixed-precision path from fp32? This is the yardstick for the ComfyUI fp16 numbers below.
+        half = GaussianFixedlenDecoder(**config["decoder_gs"]["args"])
+        half.load_state_dict(load_file(os.path.join(args.weights, "decoder_gs.safetensors")), strict=True)
+        half = half.eval().requires_grad_(False).to(device)
+        with torch.no_grad():
+            half_feats = half(points.to(device), latent.to(device))
+        report("gaussian raw features (reference's own fp16 trunk vs fp32)", half_feats.cpu(), ref_feats.cpu(), 1.0)
+        del half
     merged = {f"octree.{k}": v for k, v in load_file(os.path.join(args.weights, "decoder.safetensors")).items()}
     merged.update({f"gs.{k}": v for k, v in load_file(os.path.join(args.weights, "decoder_gs.safetensors")).items()})
     # From fp32 weights the decoders differ from the reference by ~1e-4 to 3e-3: ComfyUI's fused RMSNorm uses eps 1e-6
     # where the reference uses F.normalize (eps ~0), and the cross-attention keys from the 16-channel latent have small
-    # norms. With eps 0 the two match exactly; it is well below the fp16 rounding of the shipped files.
+    # norms. With eps 0 the two match exactly. The fp16 file at fp16 compute (--cuda) sits at ~1e-2, the same distance
+    # from fp32 as the reference's own fp16 trunk (printed above).
     for label, sd, tol in [("released fp32 weights", merged, 5e-3),
                            ("converted idol_decoder_fp16", load_file(os.path.join(args.converted, "vae", "idol_decoder_fp16.safetensors")), 5e-2)]:
-        vae = comfy.sd.VAE(sd=sd, dtype=torch.float32 if not args.cuda else None)
+        vae = comfy.sd.VAE(sd=sd, dtype=torch.float32 if label.startswith("released") else None)  # fp16 file: the device's default dtype
         comfy.model_management.load_models_gpu([vae.patcher])
         fsm, dt = vae.first_stage_model, vae.vae_dtype
-        with torch.no_grad():
-            logits = fsm.octree(coords.to(vae.device, dt), level.to(vae.device), latent.to(vae.device, dt))["logits"]
-            pred = fsm.gs(x={"points": points.to(vae.device, dt)}, cond=latent.to(vae.device, dt))
-            pg = build_gaussian_models(fsm.gs, {"points": points.to(vae.device, dt)}, pred)[0]
+        with torch.no_grad():  # points stay fp32, as in OctreeGaussianDecoder.decode: the position embedder needs them
+            logits = fsm.octree(coords.to(vae.device), level.to(vae.device), latent.to(vae.device, dt))["logits"]
+            pred = fsm.gs(x={"points": points.to(vae.device)}, cond=latent.to(vae.device, dt))
+            pg = build_gaussian_models(fsm.gs, {"points": points.to(vae.device)}, pred)[0]
             positions, _scales, rotations, opacities, sh = pg.render_tensors()
         print(f"  {label}: ComfyUI VAE dtype {dt}")
         ok &= report(f"octree logits ({label})", logits.cpu(), ref_logits, tol)

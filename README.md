@@ -11,9 +11,10 @@ seconds on a modern GPU.
   weights load with Load Diffusion Model and Load VAE and the stock TripoSplat nodes, KSampler, Render Splat,
   Save Splat and the 3D viewer run it. ComfyUI's offloading, dtypes, attention backends and `torch.compile`
   apply as usual.
-- **Two nodes** for what Idol's pipeline adds on top: **Idol Preprocess Image** (its `synthetic` / `real`
-  crop modes, background removal in place) and **Idol Camera** (the camera Idol predicts for the input, to
-  re-render the input view or start a turntable from it).
+- **Three small nodes** for what Idol's pipeline adds on top: **Idol Preprocess Image** (its `synthetic` /
+  `real` crop modes, background removal in place), **Idol Camera** (the camera Idol predicts for the input, to
+  re-render the input view or start a turntable from it) and **Idol Prune Splat** (drops the near-transparent
+  gaussians that make the viewer and exports look hazy).
 
 ## Install
 
@@ -58,6 +59,7 @@ with the Idol files and the two Idol nodes:
 | KSampler | `euler` / `simple`, **50** steps, cfg **4.0** |
 | Load VAE | `idol_decoder_fp16.safetensors` → TripoSplat Decode |
 | TripoSplat Decode | `num_gaussians` **262144** |
+| **Idol Prune Splat** | `min_opacity` **0.05**: keeps about half the gaussians, all the visible ones |
 | **Idol Camera** → Render Splat | the splat from the predicted input camera: should look like the preprocessed image |
 | Render Splat (72 frames) → Create Video | a turntable |
 | Create 3D File (from Splat) → Save Splat | `.ply` (or `.spz`, ~10x smaller), shown in the 3D viewer |
@@ -71,6 +73,15 @@ config, so no ModelSamplingSD3 node is needed; its 50 Euler steps on `linspace(1
 
 - **Crop mode matters.** Idol was trained with the object spanning 1/1.2 of the frame for renders and
   generated images (`synthetic`) and 1/1.7 for photographs (`real`). `custom` sets the margin directly.
+- **Photographs:** `mode` **real**, a clean cutout (BiRefNet does well on a single object against a simple
+  background; for hard cases paint the mask yourself and connect it), the object centred and whole in the
+  frame, and the reference's sampling (50 steps, cfg 4). The model was trained on single objects, so crop
+  out neighbours and supports. Nothing else in the graph is photo-specific.
+- **Haze, spikes and fuzzy edges** in the 3D viewer or an export are the near-transparent gaussians: Idol
+  emits about half of its gaussians with opacity under 0.05, and viewers draw all of them. **Idol Prune
+  Splat** removes them (`min_opacity` 0.05; `max_scale` 0.05 also cuts needle-shaped spikes at the
+  silhouette) and halves the file; Render Splat and Extract Mesh have the same threshold built in
+  (`opacity_threshold`, `min_opacity`). It changes what the result looks like far more than any sampler setting.
 - **Transparent PNGs:** Idol uses an image's own alpha when it has one. In ComfyUI, Load Image's mask is the
   *transparent* region, so pass it through **Invert Mask** into Idol Preprocess Image's `mask`; the
   background removal model is then not needed.
@@ -97,6 +108,12 @@ What `idol.preprocess` does, on tensors: the short side is resized to 1024, the 
 BiRefNet's prediction when none is connected) is eroded by `erode_radius` pixels so no background fringe
 survives, a square of `mode` × the object's bounding box is cropped around it, resized to `size` × `size`
 and composited on black. The `mask` output is the alpha in that frame.
+
+**Idol Prune Splat**: SPLAT → SPLAT, count
+
+Drops gaussians with opacity below `min_opacity` and, if `max_scale` is set, those whose longest axis exceeds
+it (object units; the object spans about one). Batches keep per-item counts. Put it between TripoSplat Decode
+and anything that saves, previews or renders.
 
 **Idol Camera**: LATENT → LOAD3D_CAMERA, yaw, pitch, distance, fov
 

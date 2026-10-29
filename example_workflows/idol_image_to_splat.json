@@ -1,8 +1,8 @@
 {
  "id": "b3d6c1a0-5e2f-4c7e-9a1b-1d013d000001",
  "revision": 0,
- "last_node_id": 21,
- "last_link_id": 24,
+ "last_node_id": 22,
+ "last_link_id": 25,
  "nodes": [
   {
    "id": 1,
@@ -486,9 +486,7 @@
      "name": "splat",
      "type": "SPLAT",
      "links": [
-      16,
-      19,
-      23
+      16
      ]
     }
    ],
@@ -527,8 +525,8 @@
      "name": "camera_info",
      "type": "LOAD3D_CAMERA",
      "links": [
-      17,
-      20
+      18,
+      21
      ]
     },
     {
@@ -559,6 +557,51 @@
   },
   {
    "id": 14,
+   "type": "IdolPruneSplat",
+   "pos": [
+    1130,
+    690
+   ],
+   "size": [
+    315,
+    110
+   ],
+   "flags": {},
+   "order": 13,
+   "mode": 0,
+   "inputs": [
+    {
+     "name": "splat",
+     "type": "SPLAT",
+     "link": 16
+    }
+   ],
+   "outputs": [
+    {
+     "name": "splat",
+     "type": "SPLAT",
+     "links": [
+      17,
+      20,
+      24
+     ]
+    },
+    {
+     "name": "count",
+     "type": "INT",
+     "links": []
+    }
+   ],
+   "properties": {
+    "Node name for S&R": "IdolPruneSplat"
+   },
+   "widgets_values": [
+    0.05,
+    0.0
+   ]
+  },
+  {
+   "id": 15,
    "type": "RenderSplat",
    "pos": [
     1500,
@@ -569,13 +612,13 @@
     350
    ],
    "flags": {},
-   "order": 13,
+   "order": 14,
    "mode": 0,
    "inputs": [
     {
      "name": "splat",
      "type": "SPLAT",
-     "link": 16
+     "link": 17
     },
     {
      "name": "bg_image",
@@ -586,7 +629,7 @@
     {
      "name": "camera_info",
      "type": "LOAD3D_CAMERA",
-     "link": 17,
+     "link": 18,
      "shape": 7
     }
    ],
@@ -595,7 +638,7 @@
      "name": "image",
      "type": "IMAGE",
      "links": [
-      18
+      19
      ]
     },
     {
@@ -621,7 +664,7 @@
    "title": "Render Splat (predicted input view)"
   },
   {
-   "id": 15,
+   "id": 16,
    "type": "PreviewImage",
    "pos": [
     1870,
@@ -632,13 +675,13 @@
     430
    ],
    "flags": {},
-   "order": 14,
+   "order": 15,
    "mode": 0,
    "inputs": [
     {
      "name": "images",
      "type": "IMAGE",
-     "link": 18
+     "link": 19
     }
    ],
    "outputs": [
@@ -655,7 +698,7 @@
    "title": "Predicted input view"
   },
   {
-   "id": 16,
+   "id": 17,
    "type": "RenderSplat",
    "pos": [
     1500,
@@ -666,13 +709,13 @@
     350
    ],
    "flags": {},
-   "order": 15,
+   "order": 16,
    "mode": 0,
    "inputs": [
     {
      "name": "splat",
      "type": "SPLAT",
-     "link": 19
+     "link": 20
     },
     {
      "name": "bg_image",
@@ -683,7 +726,7 @@
     {
      "name": "camera_info",
      "type": "LOAD3D_CAMERA",
-     "link": 20,
+     "link": 21,
      "shape": 7
     }
    ],
@@ -692,7 +735,7 @@
      "name": "image",
      "type": "IMAGE",
      "links": [
-      21
+      22
      ]
     },
     {
@@ -718,7 +761,7 @@
    "title": "Render Splat (turntable)"
   },
   {
-   "id": 17,
+   "id": 18,
    "type": "CreateVideo",
    "pos": [
     1870,
@@ -729,13 +772,13 @@
     130
    ],
    "flags": {},
-   "order": 16,
+   "order": 17,
    "mode": 0,
    "inputs": [
     {
      "name": "images",
      "type": "IMAGE",
-     "link": 21
+     "link": 22
     },
     {
      "name": "audio",
@@ -749,7 +792,7 @@
      "name": "VIDEO",
      "type": "VIDEO",
      "links": [
-      22
+      23
      ]
     }
    ],
@@ -761,7 +804,7 @@
    ]
   },
   {
-   "id": 18,
+   "id": 19,
    "type": "SaveVideo",
    "pos": [
     1870,
@@ -772,13 +815,13 @@
     400
    ],
    "flags": {},
-   "order": 17,
+   "order": 18,
    "mode": 0,
    "inputs": [
     {
      "name": "video",
      "type": "VIDEO",
-     "link": 22
+     "link": 23
     }
    ],
    "outputs": [
@@ -798,7 +841,7 @@
    ]
   },
   {
-   "id": 19,
+   "id": 20,
    "type": "SplatToFile3D",
    "pos": [
     1500,
@@ -809,13 +852,13 @@
     80
    ],
    "flags": {},
-   "order": 18,
+   "order": 19,
    "mode": 0,
    "inputs": [
     {
      "name": "splat",
      "type": "SPLAT",
-     "link": 23
+     "link": 24
     }
    ],
    "outputs": [
@@ -823,7 +866,7 @@
      "name": "model_3d",
      "type": "FILE_3D_SPLAT_ANY",
      "links": [
-      24
+      25
      ]
     }
    ],
@@ -835,7 +878,7 @@
    ]
   },
   {
-   "id": 20,
+   "id": 21,
    "type": "SaveGaussianSplat",
    "pos": [
     2320,
@@ -846,13 +889,13 @@
     700
    ],
    "flags": {},
-   "order": 19,
+   "order": 20,
    "mode": 0,
    "inputs": [
     {
      "name": "model_3d",
      "type": "FILE_3D_SPLAT_ANY,FILE_3D_PLY,FILE_3D_SPLAT,FILE_3D_SPZ,FILE_3D_KSPLAT",
-     "link": 24
+     "link": 25
     },
     {
      "name": "model_3d_info",
@@ -905,7 +948,7 @@
    ]
   },
   {
-   "id": 21,
+   "id": 22,
    "type": "MarkdownNote",
    "pos": [
     0,
@@ -916,7 +959,7 @@
     560
    ],
    "flags": {},
-   "order": 20,
+   "order": 21,
    "mode": 0,
    "inputs": [],
    "outputs": [],
@@ -924,7 +967,7 @@
     "Node name for S&R": "MarkdownNote"
    },
    "widgets_values": [
-    "## Idol: image to 3D gaussian splat\n\n[Idol](https://huggingface.co/speridlabs/idol) by Speridlabs is the TripoSplat architecture retrained, so ComfyUI runs it natively on the stock TripoSplat nodes. This pack adds the converted weights, **Idol Preprocess Image** (Idol's crop modes, background removal in place) and **Idol Camera** (the input camera the model predicts).\n\n**Models** (put each in the folder shown)\n\n| File | Folder | Source |\n|---|---|---|\n| `idol_fp16.safetensors` | `models/diffusion_models` | [nynxz/Idol](https://huggingface.co/nynxz/Idol) |\n| `idol_decoder_fp16.safetensors` | `models/vae` | [nynxz/Idol](https://huggingface.co/nynxz/Idol) |\n| `dino_v3_vit_h.safetensors` | `models/clip_vision` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat/tree/main/clip_vision) |\n| `flux2-vae.safetensors` | `models/vae` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat/tree/main/vae) |\n| `birefnet.safetensors` | `models/background_removal` | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet/tree/main/background_removal) |\n\n**Settings**\n\n- Idol Preprocess Image `mode`: **synthetic** for renders / generated images (the object fills 1/1.2 of the frame), **real** for photographs (1/1.7).\n- KSampler: `euler` / `simple`, **50** steps, cfg **4.0** = Idol's defaults (cfg_strength 3 + time shift 3, which the model config carries). `dpmpp_2m` at 20 steps is a faster trade-off.\n- TripoSplat Decode `num_gaussians`: 262144 matches the octree's density; more oversamples the same points.\n- The top Render Splat shows the splat from the camera Idol predicted for the input, so it should look like the preprocessed image. The bottom one is a turntable.\n"
+    "## Idol: image to 3D gaussian splat\n\n[Idol](https://huggingface.co/speridlabs/idol) by Speridlabs is the TripoSplat architecture retrained, so ComfyUI runs it natively on the stock TripoSplat nodes. This pack adds the converted weights, **Idol Preprocess Image** (Idol's crop modes, background removal in place) and **Idol Camera** (the input camera the model predicts).\n\n**Models** (put each in the folder shown)\n\n| File | Folder | Source |\n|---|---|---|\n| `idol_fp16.safetensors` | `models/diffusion_models` | [nynxz/Idol](https://huggingface.co/nynxz/Idol) |\n| `idol_decoder_fp16.safetensors` | `models/vae` | [nynxz/Idol](https://huggingface.co/nynxz/Idol) |\n| `dino_v3_vit_h.safetensors` | `models/clip_vision` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat/tree/main/clip_vision) |\n| `flux2-vae.safetensors` | `models/vae` | [VAST-AI/TripoSplat](https://huggingface.co/VAST-AI/TripoSplat/tree/main/vae) |\n| `birefnet.safetensors` | `models/background_removal` | [Comfy-Org/BiRefNet](https://huggingface.co/Comfy-Org/BiRefNet/tree/main/background_removal) |\n\n**Settings**\n\n- Idol Preprocess Image `mode`: **synthetic** for renders / generated images (the object fills 1/1.2 of the frame), **real** for photographs (1/1.7).\n- KSampler: `euler` / `simple`, **50** steps, cfg **4.0** = Idol's defaults (cfg_strength 3 + time shift 3, which the model config carries). `dpmpp_2m` at 20 steps is a faster trade-off.\n- TripoSplat Decode `num_gaussians`: 262144 matches the octree's density; more oversamples the same points.\n- **Idol Prune Splat** drops the near-transparent gaussians (about half of them) that the 3D viewer and exports draw as a fuzzy halo. `min_opacity` 0.05 is a good default; `max_scale` 0.05 also removes needle-shaped spikes.\n- The top Render Splat shows the splat from the camera Idol predicted for the input, so it should look like the preprocessed image. The bottom one is a turntable.\n"
    ],
    "title": "Idol"
   }
@@ -1060,43 +1103,43 @@
   ],
   [
    17,
-   13,
-   0,
-   14,
-   2,
-   "LOAD3D_CAMERA"
-  ],
-  [
-   18,
    14,
    0,
    15,
    0,
-   "IMAGE"
-  ],
-  [
-   19,
-   12,
-   0,
-   16,
-   0,
    "SPLAT"
   ],
   [
-   20,
+   18,
    13,
    0,
-   16,
+   15,
    2,
    "LOAD3D_CAMERA"
   ],
   [
-   21,
+   19,
+   15,
+   0,
    16,
+   0,
+   "IMAGE"
+  ],
+  [
+   20,
+   14,
    0,
    17,
    0,
-   "IMAGE"
+   "SPLAT"
+  ],
+  [
+   21,
+   13,
+   0,
+   17,
+   2,
+   "LOAD3D_CAMERA"
   ],
   [
    22,
@@ -1104,21 +1147,29 @@
    0,
    18,
    0,
-   "VIDEO"
+   "IMAGE"
   ],
   [
    23,
-   12,
+   18,
    0,
    19,
+   0,
+   "VIDEO"
+  ],
+  [
+   24,
+   14,
+   0,
+   20,
    0,
    "SPLAT"
   ],
   [
-   24,
-   19,
-   0,
+   25,
    20,
+   0,
+   21,
    0,
    "FILE_3D_SPLAT_ANY"
   ]

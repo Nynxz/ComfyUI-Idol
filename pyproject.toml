@@ -1,7 +1,7 @@
 [project]
 name = "comfyui-idol"
 version = "0.1.0"
-description = "Native ComfyUI support for Idol, Speridlabs' single image to 3D gaussian splat model: converted weights for the stock loaders, plus its crop modes and predicted camera. No extra requirements."
+description = "Native ComfyUI support for Idol, Speridlabs' single image to 3D gaussian splat model: converted weights for the stock loaders, plus its crop modes, predicted camera and splat pruning. No extra requirements."
 authors = [{ name = "Nynxz", email = "contact@nynxz.com" }]
 readme = "README.md"
 license = { file = "LICENSE" }

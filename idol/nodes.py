@@ -111,4 +111,49 @@ class IdolCamera(IO.ComfyNode):
         return IO.NodeOutput(cam.camera_info(decoded), yaw, pitch, decoded["radius"], decoded["fov"])
 
 
-NODES = [IdolPreprocessImage, IdolCamera]
+class IdolPruneSplat(IO.ComfyNode):
+    @classmethod
+    def define_schema(cls):
+        return IO.Schema(
+            node_id="IdolPruneSplat",
+            display_name="Idol Prune Splat",
+            category="3d/idol",
+            search_aliases=["prune splat", "splat opacity filter", "remove floaters", "clean splat"],
+            description="Drops the gaussians that only add haze: Idol emits about half of its gaussians with near-zero "
+                        "opacity, and the 3D viewer and most exports draw them as a fuzzy, hairy halo around the "
+                        "object. Pruning them (and optionally the longest, needle-shaped ones) cleans the splat and "
+                        "halves the file. Render Splat and Extract Mesh have their own thresholds; this applies to "
+                        "what you save and view.",
+            inputs=[
+                IO.Splat.Input("splat"),
+                IO.Float.Input("min_opacity", default=0.05, min=0.0, max=1.0, step=0.01,
+                               tooltip="Drop gaussians with opacity below this. 0.02 to 0.1 are sensible; 0 keeps all."),
+                IO.Float.Input("max_scale", default=0.0, min=0.0, max=1.0, step=0.005, advanced=True,
+                               tooltip="Drop gaussians whose longest axis exceeds this, in object units (the object "
+                                       "spans about 1). Removes needle-shaped spikes at the silhouette; 0 = off, "
+                                       "0.05 is a reasonable start."),
+            ],
+            outputs=[IO.Splat.Output(display_name="splat"), IO.Int.Output(display_name="count")],
+        )
+
+    @classmethod
+    def execute(cls, splat, min_opacity, max_scale) -> IO.NodeOutput:
+        from comfy_api.latest import Types
+        kept = []
+        for i in range(splat.positions.shape[0]):
+            n = int(splat.counts[i]) if splat.counts is not None else splat.positions.shape[1]
+            keep = splat.opacities[i, :n, 0] >= min_opacity
+            if max_scale > 0:
+                keep &= splat.scales[i, :n].max(dim=-1).values <= max_scale
+            idx = torch.nonzero(keep, as_tuple=True)[0]
+            kept.append(tuple(t[i, :n][idx] for t in (splat.positions, splat.scales, splat.rotations, splat.opacities, splat.sh)))
+        counts = torch.tensor([k[0].shape[0] for k in kept])
+        n_max = max(1, int(counts.max()))
+        pad = lambda t: F.pad(t, (0,) * (2 * (t.ndim - 1)) + (0, n_max - t.shape[0]))
+        batched = [torch.stack([pad(k[j]) for k in kept]) for j in range(5)]
+        uniform = bool((counts == n_max).all())
+        out = Types.SPLAT(*batched, counts=None if uniform else counts)
+        return IO.NodeOutput(out, int(counts[0]))
+
+
+NODES = [IdolPreprocessImage, IdolCamera, IdolPruneSplat]
