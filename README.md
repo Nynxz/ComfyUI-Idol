@@ -78,7 +78,9 @@ config, so no ModelSamplingSD3 node is needed; its 50 Euler steps on `linspace(1
   frame, and the reference's sampling (50 steps, cfg 4). The model was trained on single objects, so crop
   out neighbours and supports. Nothing else in the graph is photo-specific.
 - **Haze, spikes and fuzzy edges** in the 3D viewer or an export are the near-transparent gaussians: Idol
-  emits about half of its gaussians with opacity under 0.05, and viewers draw all of them. **Idol Prune
+  emits about half of its gaussians with opacity under 0.05, and viewers draw all of them. The reference
+  SDK's own `.ply` of the same image has the same halo (rendered side by side they are indistinguishable), so
+  this is the model as released, not the port. **Idol Prune
   Splat** removes them (`min_opacity` 0.05; `max_scale` 0.05 also cuts needle-shaped spikes at the
   silhouette) and halves the file; Render Splat and Extract Mesh have the same threshold built in
   (`opacity_threshold`, `min_opacity`). It changes what the result looks like far more than any sampler setting.
